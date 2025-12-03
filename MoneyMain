@@ -1,0 +1,141 @@
+import java.util.Scanner;
+
+class Money {
+    private int hryvnia;
+    private int kopiyky;
+    private static final int KOPIYKY_IN_HRYVNIA = 100;
+
+    private static int count = 0;
+
+    public Money() {
+        this.hryvnia = 0;
+        this.kopiyky = 0;
+        count++;
+    }
+    
+    public Money(int hryvnia, int kopiyky) {
+        this.hryvnia = hryvnia;
+        this.kopiyky = kopiyky;
+        normalize();
+        count++;
+    }
+    public Money(Money other) {
+        this.hryvnia = other.hryvnia;
+        this.kopiyky = other.kopiyky;
+        count++;
+    }
+
+    private void normalize() {
+        if (kopiyky >= KOPIYKY_IN_HRYVNIA) {
+            hryvnia += kopiyky / KOPIYKY_IN_HRYVNIA;
+            kopiyky = kopiyky % KOPIYKY_IN_HRYVNIA;
+        }
+        if (kopiyky < 0) {
+            int borrow = (Math.abs(kopiyky) + 99) / 100;
+            hryvnia -= borrow;
+            kopiyky += borrow * 100;
+        }
+    }
+
+    public Money add(Money other) {
+        return new Money(this.hryvnia + other.hryvnia, this.kopiyky + other.kopiyky);
+    }
+
+    public Money subtract(Money other) {
+        int total1 = this.hryvnia * 100 + this.kopiyky;
+        int total2 = other.hryvnia * 100 + other.kopiyky;
+        int result = total1 - total2;
+        if (result < 0) result = 0;
+        return new Money(result / 100, result % 100);
+    }
+
+    public double divide(Money other) {
+        int total1 = this.hryvnia * 100 + this.kopiyky;
+        int total2 = other.hryvnia * 100 + other.kopiyky;
+        if (total2 == 0) throw new ArithmeticException("Ділення на нуль!");
+        return (double) total1 / total2;
+    }
+
+    public Money divideBy(double number) {
+        if (number == 0) throw new ArithmeticException("Ділення на нуль!");
+        int total = this.hryvnia * 100 + this.kopiyky;
+        int result = (int) Math.round(total / number);
+        return new Money(result / 100, result % 100);
+    }
+
+
+    public boolean greaterThan(Money other) {
+        return (this.hryvnia * 100 + this.kopiyky) > (other.hryvnia * 100 + other.kopiyky);
+    }
+
+    public boolean lessThan(Money other) {
+        return (this.hryvnia * 100 + this.kopiyky) < (other.hryvnia * 100 + other.kopiyky);
+    }
+
+    public boolean greaterOrEqual(Money other) {
+        return (this.hryvnia * 100 + this.kopiyky) >= (other.hryvnia * 100 + other.kopiyky);
+    }
+
+    public boolean lessOrEqual(Money other) {
+        return (this.hryvnia * 100 + this.kopiyky) <= (other.hryvnia * 100 + other.kopiyky);
+    }
+
+    
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Money)) return false;
+        Money m = (Money) obj;
+        return this.hryvnia == m.hryvnia && this.kopiyky == m.kopiyky;
+    }
+
+    
+    public static int getCount() {
+        return count;
+    }
+
+    @Override
+    public String toString() {
+        return hryvnia + "," + String.format("%02d", kopiyky) + " грн";
+    }
+}
+
+public class MoneyMain {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Введіть першу суму (гривні і копійки): ");
+        int hryvnia1 = sc.nextInt();
+        int kopiyky1 = sc.nextInt();
+        Money m1 = new Money(hryvnia1, kopiyky1);
+
+        System.out.print("Введіть другу суму (гривні і копійки): ");
+        int hryvnia2 = sc.nextInt();
+        int kopiyky2 = sc.nextInt();
+        Money m2 = new Money(hryvnia2, kopiyky2);
+
+        System.out.println("Перша сума: " + m1);
+        System.out.println("Друга сума: " + m2);
+
+        Money sum = m1.add(m2);
+        System.out.println("Додавання: " + sum);
+
+        Money diff = m1.subtract(m2);
+        System.out.println("Віднімання: " + diff);
+
+        double division = m1.divide(m2);
+        System.out.println("Ділення першої суми на другу: " + division);
+
+        System.out.print("Введіть число для ділення першої суми: ");
+        double num = sc.nextDouble();
+        Money divByNum = m1.divideBy(num);
+        System.out.println("Ділення першої суми на " + num + ": " + divByNum);
+
+        System.out.println("Чи перша > друга? " + m1.greaterThan(m2));
+        System.out.println("Чи перша < друга? " + m1.lessThan(m2));
+        System.out.println("Чи перша >= друга? " + m1.greaterOrEqual(m2));
+        System.out.println("Чи перша <= друга? " + m1.lessOrEqual(m2));
+        System.out.println("Чи рівні суми? " + m1.equals(m2));
+
+        System.out.println("Кількість створених об'єктів Money: " + Money.getCount());
+    }
+}
