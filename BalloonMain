@@ -1,0 +1,114 @@
+import java.util.Scanner;
+
+class Balloon {
+    private int x, y, z; 
+    private int r;  
+
+    private static int count = 0;
+
+    {
+        count++;
+    }
+
+    public Balloon() {
+        this(0, 0, 0, 1);
+    }
+
+    public Balloon(int x, int y, int z, int r) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.r = r;
+    }
+
+    public Balloon(Balloon other) {
+        this(other.x, other.y, other.z, other.r);
+    }
+
+    public static int getCount() {
+        return count;
+    }
+
+    public double volume() {
+        return (4.0 / 3.0) * Math.PI * Math.pow(r, 3);
+    }
+
+    public double distanceTo(Balloon other) {
+        return Math.sqrt(Math.pow(this.x - other.x, 2) +
+                         Math.pow(this.y - other.y, 2) +
+                         Math.pow(this.z - other.z, 2));
+    }
+
+    public double intersectionVolume(Balloon other) {
+        double d = this.distanceTo(other);
+        double r1 = this.r;
+        double r2 = other.r;
+
+        if (d >= r1 + r2) {
+            return 0.0;
+        }
+
+        if (d <= Math.abs(r1 - r2)) {
+            return Math.min(this.volume(), other.volume());
+        }
+
+        double num = Math.PI * Math.pow(r1 + r2 - d, 2) *
+                     (d*d + 2*d*(r1 + r2) - 3*Math.pow(r1 - r2, 2));
+        double den = 12.0 * d;
+        return num / den;
+    }
+
+    public static double unionVolume(Balloon b1, Balloon b2) {
+        return b1.volume() + b2.volume() - b1.intersectionVolume(b2);
+    }
+
+    @Override
+    public String toString() {
+        return "Balloon(center=(" + x + "," + y + "," + z + "), r=" + r + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Balloon)) return false;
+        Balloon other = (Balloon) obj;
+        return this.x == other.x && this.y == other.y && this.z == other.z && this.r == other.r;
+    }
+}
+
+public class BalloonMain {
+
+    private static String fmt(double v) {
+        return String.format("%.2f", v).replace('.', ',');
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Введіть координати та радіус першої кулі (x y z r): ");
+        int x1 = sc.nextInt(), y1 = sc.nextInt(), z1 = sc.nextInt(), r1 = sc.nextInt();
+
+        System.out.println("Введіть координати та радіус другої кулі (x y z r): ");
+        int x2 = sc.nextInt(), y2 = sc.nextInt(), z2 = sc.nextInt(), r2 = sc.nextInt();
+
+        Balloon b1 = new Balloon(x1, y1, z1, r1);
+        Balloon b2 = new Balloon(x2, y2, z2, r2);
+
+        System.out.println("Куля 1: " + b1);
+        System.out.println("Куля 2: " + b2);
+
+        double v1 = b1.volume();
+        double v2 = b2.volume();
+        double inter = b1.intersectionVolume(b2);
+        double uni = Balloon.unionVolume(b1, b2);
+
+        System.out.println("Об'єм кулі 1: " + fmt(v1));
+        System.out.println("Об'єм кулі 2: " + fmt(v2));
+        System.out.println("Об'єм перетину: " + fmt(inter));
+        System.out.println("Об'єм об'єднання: " + fmt(uni));
+        System.out.println("Кількість створених куль: " + Balloon.getCount());
+
+        sc.close();
+    }
+}
+
