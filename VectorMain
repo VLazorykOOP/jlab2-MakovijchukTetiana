@@ -1,0 +1,97 @@
+import java.util.Scanner;
+
+class Vector3D {
+    private double x, y, z;
+    private static int count = 0;
+
+    public Vector3D() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        count++;
+    }
+
+    public Vector3D(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        count++;
+    }
+
+    public Vector3D(Vector3D other) {
+        this(other.x, other.y, other.z);
+        count++;
+    }
+
+    public double length() {
+        return Math.sqrt(x * x + y * y + z * z);
+    }
+
+    public Vector3D multiply(double k) {
+        return new Vector3D(x * k, y * k, z * k);
+    }
+
+    public Vector3D add(Vector3D v) {
+        return new Vector3D(this.x + v.x, this.y + v.y, this.z + v.z);
+    }
+
+    public double dot(Vector3D v) {
+        return this.x * v.x + this.y * v.y + this.z * v.z;
+    }
+
+    public Vector3D cross(Vector3D v) {
+        return new Vector3D(
+                this.y * v.z - this.z * v.y,
+                this.z * v.x - this.x * v.z,
+                this.x * v.y - this.y * v.x
+        );
+    }
+
+    public static int getCount() {
+        return count;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Vector3D)) return false;
+        Vector3D v = (Vector3D) obj;
+        return this.x == v.x && this.y == v.y && this.z == v.z;
+    }
+}
+
+public class VectorMain {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Введіть координати першого вектора (x y z): ");
+        double x1 = sc.nextDouble();
+        double y1 = sc.nextDouble();
+        double z1 = sc.nextDouble();
+        Vector3D v1 = new Vector3D(x1, y1, z1);
+
+        System.out.print("Введіть координати другого вектора (x y z): ");
+        double x2 = sc.nextDouble();
+        double y2 = sc.nextDouble();
+        double z2 = sc.nextDouble();
+        Vector3D v2 = new Vector3D(x2, y2, z2);
+
+        System.out.println("Перший вектор: " + v1);
+        System.out.println("Другий вектор: " + v2);
+
+        System.out.println("Довжина першого вектора: " + v1.length());
+        System.out.println("Перший вектор * 2 = " + v1.multiply(2));
+        System.out.println("Сума векторів: " + v1.add(v2));
+        System.out.println("Скалярний добуток: " + v1.dot(v2));
+        System.out.println("Векторний добуток: " + v1.cross(v2));
+
+        System.out.println("Чи рівні вектори? " + v1.equals(v2));
+
+        System.out.println("Кількість створених векторів: " + Vector3D.getCount());
+    }
+}
